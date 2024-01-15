@@ -1,0 +1,141 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                               Price Movement Strength |
+//|                                                                  |
+//|                                https://forexroboteasy.com/                 |
+//|                                                                  |
+//|                                                                  |
+//|-----------------------------------------|
+//|                                                                  |
+//|  Developed by:                                             |
+//|             Forex Robot Easy Team            |
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+#property copyright 'Forex Robot Easy Team'
+#property link      'https://forexroboteasy.com/'
+#property version   '1.00'
+#property description 'Price Movement Strength Indicator'
+
+// Input parameters
+input double BuyLevel = 1.0; // Percentage required for a buy signal
+input double SellLevel = 1.0; // Percentage required for a sell signal
+
+//+------------------------------------------------------------------+
+//| Custom indicator initialization function                         |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+   // Indicator buffers mapping
+   SetIndexStyle(0, DRAW_COLOR_CANDLES);
+   SetIndexBuffer(0,ExtMapBuffer);
+   
+   // Set indicator label
+   IndicatorSetString(INDICATOR_SHORTNAME, 'Price Movement Strength');
+   
+   // Set indicator parameters
+   IndicatorSetDouble(0, INDICATOR_DIGITS, MarketInfo(_Symbol, MODE_DIGITS));
+   
+   return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Custom indicator iteration function                              |
+//+------------------------------------------------------------------+
+int OnCalculate(const int rates_total,
+                const int prev_calculated,
+                const datetime &time[],
+                const double &open[],
+                const double &high[],
+                const double &low[],
+                const double &close[],
+                const long &tick_volume[],
+                const long &volume[],
+                const int &spread[])
+{
+   int limit = rates_total - prev_calculated;
+   
+   // Iterate over price bars
+   for(int i = 0; i < limit; i++)
+   {
+      // Calculate price movement strength
+      double pms = close[i] - close[i+1];
+      
+      // Determine the trend and color code the candles
+      if(pms > 0)
+         ExtMapBuffer[i] = C'Green';
+      else if(pms < 0)
+         ExtMapBuffer[i] = C'Red';
+      else
+         ExtMapBuffer[i] = C'Black';
+   }
+   
+   return(rates_total);
+}
+
+//+------------------------------------------------------------------+
+//| Generate trading signals based on Price Movement Strength         |
+//+------------------------------------------------------------------+
+void GenerateSignals()
+{
+   double last_pms = ExtMapBuffer[0];
+   
+   // Check for buy signal
+   if(last_pms > BuyLevel)
+   {
+      // Execute buy trade
+      // ...
+      Print('Buy signal generated: ', last_pms);
+   }
+   
+   // Check for sell signal
+   if(last_pms < -SellLevel)
+   {
+      // Execute sell trade
+      // ...
+      Print('Sell signal generated: ', last_pms);
+   }
+}
+
+//+------------------------------------------------------------------+
+//| Custom indicator deinitialization function                       |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+   // Deinitialization code
+   // ...
+}
+
+//+------------------------------------------------------------------+
+//| Custom indicator parameters                                      |
+//+------------------------------------------------------------------+
+void SetIndicatorParameters()
+{
+   // Set indicator parameters
+   // ...
+}
+
+//+------------------------------------------------------------------+
+//| Custom indicator visualization function                          |
+//+------------------------------------------------------------------+
+void VisualizeIndicator()
+{
+   // Visualize indicator using color-coded candles
+   // ...
+}
+
+//+------------------------------------------------------------------+
+//| Custom indicator main function                                   |
+//+------------------------------------------------------------------+
+void OnStart()
+{
+   // Perform necessary actions
+   // ...
+   
+   // Generate trading signals
+   GenerateSignals();
+   
+   // Visualize indicator
+   VisualizeIndicator();
+}
+
